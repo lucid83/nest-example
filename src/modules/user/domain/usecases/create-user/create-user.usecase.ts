@@ -8,6 +8,8 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { DataSource, Repository } from 'typeorm';
 import { hash } from 'bcrypt';
+import { getPrettyClassValidatorErrors } from 'src/utils/valiation.util';
+import { ERR_EMAIL_EXISTS, ERR_USERNAME_EXISTS } from 'src/errors/user-exists.error';
 
 @Injectable()
 export class CreateUserUsecase {
@@ -22,16 +24,22 @@ export class CreateUserUsecase {
     const dto = plainToInstance(CreateUserDto, _dto)
     const validationErrs = await validate(dto)
     if(validationErrs.length > 0) {
-      const inputErrors = {}
-      validationErrs.forEach(err => {
-        inputErrors[err.property] = Object.values(err.constraints)
-        return inputErrors
-      })
-
+      const inputErrors = getPrettyClassValidatorErrors(validationErrs)
       return [null, new ERR_INVALID_INPUT(inputErrors)]
     }
 
     // dto is valid
+    // check if user already exists
+    const existingUser = await this.userRepo.findOne({where: [{email: dto.email}, {username: dto.username}]})
+    if(existingUser != null) {
+      if(existingUser.email == dto.email) {
+        return [null, new ERR_EMAIL_EXISTS]
+      }
+      if(existingUser.username == dto.username) {
+        return [null, new ERR_USERNAME_EXISTS]
+      }
+    }
+
     const user = this.userRepo.create(
       {
         email: dto.email,

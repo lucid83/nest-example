@@ -25,7 +25,7 @@ describe('CreateUserUsecase', () => {
 
     createUsecase = module.get<CreateUserUsecase>(CreateUserUsecase);
     const datasource = module.get(DataSource)
-    datasource.getRepository(UserEntity).clear()
+    await datasource.getRepository(UserEntity).clear()
   });
 
   it('should be defined', () => {
@@ -41,7 +41,6 @@ describe('CreateUserUsecase', () => {
     }
     const [user, err] = await createUsecase.run(invalidInput)
 
-    console.log(err.cause)
     expect(err.message).toEqual(ERR_INVALID_INPUT.message)
     expect(user).toBeNull()
   })
