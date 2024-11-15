@@ -71,7 +71,7 @@ describe('LoginUsecase', () => {
     })
   })
 
-  describe("sinPayload", () => {
+  describe("loginUsecase.signPayload", () => {
     it("should return a object with auth_token", async () => {
       const dto = {
         email: userDetails.email,
@@ -85,6 +85,7 @@ describe('LoginUsecase', () => {
       expect(signErr).toBeNull()
       expect(loginResopnse).toHaveProperty("auth_token")
     })
+
   })
 
 })
