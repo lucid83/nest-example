@@ -4,15 +4,11 @@ import { DataSource, Repository } from "typeorm";
 import { LoginDto } from "./dto/authenticate.dto";
 import { Result } from "src/types/result.type";
 import { CustomError } from "src/errors/custom.error";
-import { LoginResponse } from "./dto/login-response.dto";
 import { ERR_USER_NOT_FOUND } from "src/errors/user-not-found.error";
 import { JwtPayload } from "./dto/jwt-payload.dto";
 import { compare } from "bcrypt";
 import { ERR_INCORRECT_PASSWORD } from "src/errors/incorrect-password.error";
-import { plainToInstance } from "class-transformer";
-import { validate } from "class-validator";
-import { getPrettyClassValidatorErrors } from "src/utils/valiation.util";
-import { ERR_INVALID_INPUT } from "src/errors/invalid-input.error";
+import { validateInput } from "src/utils/valiation.util";
 
 @Injectable()
 export class LoginUsecase {
@@ -22,16 +18,11 @@ export class LoginUsecase {
   }
 
   async authenticate(_dto: LoginDto): Promise<Result<JwtPayload, CustomError>> {
-    // TODO: validate dto
-    //
-    const dto = plainToInstance(LoginDto, _dto)
-    const validationErrs = await validate(dto)
-    if (validationErrs.length > 0) {
-      const prettyErrs = getPrettyClassValidatorErrors(validationErrs)
-      return [null, new ERR_INVALID_INPUT(prettyErrs)]
+    const [dto, err] = await validateInput(LoginDto, _dto)
+    if (err != null) {
+      return [null, err]
     }
 
-    console.log(dto)
     const user = await this.userRepo.findOne({ where: [{ email: dto.email }] })
     if (user == null) {
       return [null, new ERR_USER_NOT_FOUND()]

@@ -5,7 +5,6 @@ import { AppModule } from 'src/app.module';
 import { ERR_EMAIL_EXISTS, ERR_USERNAME_EXISTS } from 'src/errors/user-exists.error';
 import { DataSource } from 'typeorm';
 import { UserEntity } from 'src/modules/user/domain/entity/user.entity';
-import { suite } from 'node:test';
 
 describe('Auth Controller ', () => {
   let app: INestApplication;
@@ -61,10 +60,10 @@ describe('Auth Controller ', () => {
         password: "password@124Secure-"
       }
       await request(app.getHttpServer())
-      .post('/auth/register')
-      .send(dto)
-      .expect(201)
-      .expect({})
+        .post('/auth/register')
+        .send(dto)
+        .expect(201)
+        .expect({})
 
       dto.username = "user2"
       return request(app.getHttpServer())
@@ -82,18 +81,18 @@ describe('Auth Controller ', () => {
       }
 
       await request(app.getHttpServer())
-      .post('/auth/register')
-      .send(dto)
-      .expect(201)
-      .expect({})
+        .post('/auth/register')
+        .send(dto)
+        .expect(201)
+        .expect({})
 
       dto.email = "user1@email.com"
 
       await request(app.getHttpServer())
-      .post('/auth/register')
-      .send(dto)
-      .expect(400)
-      .expect(new RegExp(`{"message":"${ERR_USERNAME_EXISTS.message}","cause":null}`))
+        .post('/auth/register')
+        .send(dto)
+        .expect(400)
+        .expect(new RegExp(`{"message":"${ERR_USERNAME_EXISTS.message}","cause":null}`))
     });
   })
 
@@ -113,7 +112,7 @@ describe('Auth Controller ', () => {
 
     it("should return 200 given valid input", async () => {
       const dto = {
-        email:userDetails.email,
+        email: userDetails.email,
         password: userDetails.password
       }
 
