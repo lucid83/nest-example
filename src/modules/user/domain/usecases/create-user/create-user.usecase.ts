@@ -15,7 +15,7 @@ import { ERR_EMAIL_EXISTS, ERR_USERNAME_EXISTS } from 'src/errors/user-exists.er
 export class CreateUserUsecase {
   private userRepo: Repository<UserEntity>
   constructor(private datasource: DataSource) {
-    this.userRepo = datasource.getRepository(UserEntity)
+    this.userRepo = this.datasource.getRepository(UserEntity)
   }
 
 
