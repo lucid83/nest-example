@@ -9,6 +9,10 @@ import { ERR_USER_NOT_FOUND } from "src/errors/user-not-found.error";
 import { JwtPayload } from "./dto/jwt-payload.dto";
 import { compare } from "bcrypt";
 import { ERR_INCORRECT_PASSWORD } from "src/errors/incorrect-password.error";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+import { getPrettyClassValidatorErrors } from "src/utils/valiation.util";
+import { ERR_INVALID_INPUT } from "src/errors/invalid-input.error";
 
 @Injectable()
 export class LoginUsecase {
@@ -17,8 +21,15 @@ export class LoginUsecase {
     this.userRepo = this.datasource.getRepository(UserEntity)
   }
 
-  async authenticate(dto: LoginDto): Promise<Result<JwtPayload, CustomError>> {
+  async authenticate(_dto: LoginDto): Promise<Result<JwtPayload, CustomError>> {
     // TODO: validate dto
+    //
+    const dto = plainToInstance(LoginDto, _dto)
+    const validationErrs = await validate(dto)
+    if (validationErrs.length > 0) {
+      const prettyErrs = getPrettyClassValidatorErrors(validationErrs)
+      return [null, new ERR_INVALID_INPUT(prettyErrs)]
+    }
 
     console.log(dto)
     const user = await this.userRepo.findOne({ where: [{ email: dto.email }] })

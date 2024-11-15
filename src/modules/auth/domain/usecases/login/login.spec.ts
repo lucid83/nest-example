@@ -35,22 +35,35 @@ describe('LoginUsecase', () => {
     await datasource.getRepository(UserEntity).clear()
 
     await module.get(RegisterUsecase).run(userDetails)
-
   });
 
   it('should be defined', () => {
     expect(loginUsecase).toBeDefined();
   });
 
-  it("should return a valid login response when given a valid dto", async () => {
-    const dto = {
-      email: userDetails.email,
-      password: userDetails.password
-    }
+  describe("login.authenticate", () => {
 
-    const [payload, err] = await loginUsecase.authenticate(dto)
-    expect(err).toBeNull()
-    expect(payload).toBeInstanceOf(JwtPayload)
+    it("should return a valid payload when given a valid dto", async () => {
+      const dto = {
+        email: userDetails.email,
+        password: userDetails.password
+      }
+
+      const [payload, err] = await loginUsecase.authenticate(dto)
+      expect(err).toBeNull()
+      expect(payload).toBeInstanceOf(JwtPayload)
+    })
+
+    it("should return an error when given an invalid dto", async () => {
+      const dto = {
+        email: undefined,
+        password: userDetails.password
+      }
+
+      const [payload, err] = await loginUsecase.authenticate(dto)
+      expect(err).not.toBeNull()
+    })
+
   })
 
 })
