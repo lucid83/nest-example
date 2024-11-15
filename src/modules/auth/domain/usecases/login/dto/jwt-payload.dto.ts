@@ -8,4 +8,8 @@ export class JwtPayload {
     this.username = user.username
     this.email = user.email
   }
+
+  toPojo() {
+    return { ...this }
+  }
 }

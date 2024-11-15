@@ -1,4 +1,4 @@
-export class LoginResponse {
+export class SignedPayload {
   constructor(token) {
     this.auth_token = token
   }
