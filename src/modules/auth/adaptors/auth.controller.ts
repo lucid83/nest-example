@@ -27,7 +27,7 @@ export class AuthController {
     if (err != null) {
       throw new HttpException(err, HttpStatus.UNAUTHORIZED)
     }
-    return { ...signed }
+    return signed
   }
 
 }
