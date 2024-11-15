@@ -5,6 +5,8 @@ import { LocalAuthGuard } from '../domain/guards/local.guard';
 import { JwtPayload } from '../domain/usecases/login/dto/jwt-payload.dto';
 import { Request } from 'express';
 import { LoginUsecase } from '../domain/usecases/login/login.usecase';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../domain/guards/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -30,4 +32,8 @@ export class AuthController {
     return signed
   }
 
+  @Get("verify")
+  @UseGuards(JwtAuthGuard)
+  async verify(@Req() req: Request) {
+  }
 }

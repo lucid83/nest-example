@@ -5,6 +5,7 @@ import { AppModule } from 'src/app.module';
 import { ERR_EMAIL_EXISTS, ERR_USERNAME_EXISTS } from 'src/errors/user-exists.error';
 import { DataSource } from 'typeorm';
 import { UserEntity } from 'src/modules/user/domain/entity/user.entity';
+import { SignedPayload } from 'src/modules/auth/domain/usecases/login/dto/login-response.dto';
 
 describe('Auth Controller ', () => {
   let app: INestApplication;
@@ -96,7 +97,7 @@ describe('Auth Controller ', () => {
     });
   })
 
-  describe("/auth/login (POST)", () => {
+  describe("/auth/login (GET)", () => {
     const userDetails = {
       username: "username",
       email: "user@email.com",
@@ -125,6 +126,47 @@ describe('Auth Controller ', () => {
         })
     })
 
+  })
+
+  describe("/auth/verify", () => {
+    const userDetails = {
+      username: "username",
+      email: "user@email.com",
+      password: "password@124Secure-"
+    }
+
+    let jwt: SignedPayload
+
+    beforeEach(async () => {
+
+      await request(app.getHttpServer())
+        .post('/auth/register')
+        .send(userDetails)
+        .expect(201)
+
+      const dto = {
+        email: userDetails.email,
+        password: userDetails.password
+      }
+
+      await request(app.getHttpServer())
+        .get("/auth/login")
+        .send(dto)
+        .expect(200,)
+        .expect((res) => {
+          expect(res.body).toHaveProperty("auth_token")
+        })
+        .then((res) => {
+          jwt = res.body
+        })
+    })
+
+    it("should return 200 given a valid jwt", async () => {
+      await request(app.getHttpServer())
+        .get("/auth/verify")
+        .auth(jwt.auth_token, { type: "bearer" })
+        .expect(200)
+    })
   })
 
 });

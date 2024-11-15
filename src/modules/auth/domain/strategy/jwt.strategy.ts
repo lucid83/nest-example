@@ -1,11 +1,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { VerifyUsecase } from '../usecases/verify/verify.usecase';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(config: ConfigService) {
+  constructor(config: ConfigService, private verifyUsecase: VerifyUsecase) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -15,6 +16,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     // TODO: use jwt-use-case.authenticate to validate
-    // return { userId: payload.sub, username: payload.username };
+    const [user, verifyErr] = await this.verifyUsecase.run(payload)
+
+    if (verifyErr != null) {
+      throw new HttpException(verifyErr, HttpStatus.UNAUTHORIZED)
+    }
+    return user
   }
 }

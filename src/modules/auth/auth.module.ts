@@ -18,6 +18,7 @@ import { VerifyUsecase } from './domain/usecases/verify/verify.usecase';
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>("JWT_SECRET"),
+        signOptions: { expiresIn: "5m" }
       }),
       inject: [ConfigService]
     }),

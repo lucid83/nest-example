@@ -62,7 +62,6 @@ describe("Verify Usecase", () => {
 
   it('should return the user object when given a jwt payload', async () => {
     const [user, verifyErr] = await verifyUsecase.run(payload)
-    console.log(user)
     expect(verifyErr).toBeNull()
     expect(user).toBeInstanceOf(UserEntity)
   })
