@@ -9,6 +9,7 @@ import { JwtStrategy } from './domain/strategy/jwt.strategy';
 import { LoginUsecase } from './domain/usecases/login/login.usecase';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { VerifyUsecase } from './domain/usecases/verify/verify.usecase';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [AuthController],
-  providers: [RegisterUsecase, LoginUsecase, LocalStrategy, JwtStrategy],
+  providers: [RegisterUsecase, LoginUsecase, VerifyUsecase, LocalStrategy, JwtStrategy],
 })
 export class AuthModule { }
