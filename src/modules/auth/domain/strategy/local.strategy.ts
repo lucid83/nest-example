@@ -6,7 +6,7 @@ import { LoginUsecase } from '../usecases/login/login.usecase';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private loginUsecase: LoginUsecase) {
-    super();
+    super({ usernameField: "email" });
   }
 
   async validate(email: string, password: string): Promise<any> {
