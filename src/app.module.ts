@@ -15,16 +15,10 @@ import { JwtModule } from '@nestjs/jwt';
     UserModule,
     TypeOrmModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
-        database: config.get<string>("DB_NAME"),
+        database: config.getOrThrow<string>("DB_NAME"),
         type: "sqlite",
         synchronize: true,
         autoLoadEntities: true
-      }),
-      inject: [ConfigService]
-    }),
-    JwtModule.registerAsync({
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>("JWT_SECRET"),
       }),
       inject: [ConfigService]
     }),

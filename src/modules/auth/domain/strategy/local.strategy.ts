@@ -10,6 +10,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string): Promise<any> {
+    console.log('validationg from local auth')
     const [jwtPayload, err] = await this.loginUsecase.authenticate({ email, password });
     if (err != null) {
       throw new HttpException(err, HttpStatus.UNAUTHORIZED)

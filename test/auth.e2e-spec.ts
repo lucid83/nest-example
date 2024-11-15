@@ -121,7 +121,7 @@ describe('Auth Controller ', () => {
         .send(dto)
         .expect(200)
         .expect(res => {
-          expect(res.body).toHaveProperty("auth-token")
+          expect(res.body).toHaveProperty("auth_token")
         })
     })
 

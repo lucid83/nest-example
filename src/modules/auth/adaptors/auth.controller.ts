@@ -1,11 +1,14 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { RegisterUserDto } from '../domain/usecases/register/register.dto';
 import { RegisterUsecase } from '../domain/usecases/register/register.usecase';
-import { LoginDto } from '../domain/usecases/login/dto/authenticate.dto';
+import { LocalAuthGuard } from '../domain/guards/local.guard';
+import { JwtPayload } from '../domain/usecases/login/dto/jwt-payload.dto';
+import { Request } from 'express';
+import { LoginUsecase } from '../domain/usecases/login/login.usecase';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private registerUseCase: RegisterUsecase) { }
+  constructor(private registerUseCase: RegisterUsecase, private loginUsecase: LoginUsecase) { }
 
   @Post("register")
   async register(@Body() dto: RegisterUserDto) {
@@ -16,8 +19,15 @@ export class AuthController {
   }
 
   @Get("login")
-  async login(@Body() dto: LoginDto) {
-
+  @UseGuards(LocalAuthGuard)
+  async login(@Req() req: Request) {
+    const [signed, err] = await this.loginUsecase.signPayload(
+      req.user as JwtPayload
+    )
+    if (err != null) {
+      throw new HttpException(err, HttpStatus.UNAUTHORIZED)
+    }
+    return { ...signed }
   }
 
 }
